@@ -1,12 +1,14 @@
 #!/bin/bash
 
-DB_USER="cs4400"
-DB_PASS="<passphrase omitted for privacy>"
-DB_HOST="webdev.divms.uiowa.edu"
-DB_NAME="cs4400"  
+DB_USER="root"
+DB_PASS=""
+DB_HOST="localhost"
+DB_NAME="ImmunoSysDB"  
 
-# Connect to the MySQL database 
-mysql -u "$DB_USER" -h "$DB_HOST" -p"$DB_PASS" "$DB_NAME" <<EOF
+# Connect to MySQL without specifying a database, then create and use the database
+mysql -u "$DB_USER" -h "$DB_HOST" -p"$DB_PASS" <<EOF
+CREATE DATABASE IF NOT EXISTS $DB_NAME;
+USE $DB_NAME;
 
 -- drop dependent tables
 DROP TABLE IF EXISTS Appointments;
@@ -87,7 +89,7 @@ BEGIN
 END$$
 
 CREATE TRIGGER CheckDateOfBirthOnUpdate
-BEFORE Update ON Patients
+BEFORE UPDATE ON Patients
 FOR EACH ROW
 BEGIN
   IF NEW.DateOfBirth > CURDATE() THEN

@@ -31,7 +31,8 @@
         </div>
         <div class="query-container">
             <?php
-            $mysqli = new mysqli("webdev.divms.uiowa.edu", "cs4400", "<passphrase omitted for privacy>", "cs4400");
+            //$mysqli = new mysqli("webdev.divms.uiowa.edu", "cs4400", "<passphrase omitted for privacy>", "cs4400");
+            $mysqli = new mysqli("127.0.0.1", "root", "", "ImmunoSysDB");
 
             // Check connection
             if ($mysqli->connect_error) {

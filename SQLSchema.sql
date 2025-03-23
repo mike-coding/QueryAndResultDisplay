@@ -320,18 +320,18 @@ LEFT JOIN
 -- This view combines simple batch information into tuples
 CREATE VIEW View_SimpleBatchInformation AS
 SELECT
-	b.BatchId,
+    b.BatchId,
     b.Year,
     f.Formulation,
     a.AppointmentId
 FROM
-	Batches b
+    Batches b
 JOIN 
-	Formulations f ON b.Formulation=f.Formulation
+    Formulations f ON b.Formulation=f.Formulation
 JOIN 
-	Appointments a ON b.BatchId = a.BatchId
+    Appointments a ON b.BatchId = a.BatchId
 ORDER BY
-b.BatchId ASC;
+    b.BatchId ASC;
 
 -- Made this super convoluted view for some reason too, we can just ignore this 
 CREATE VIEW View_ConvolutedBatchInformation AS
@@ -350,7 +350,7 @@ LEFT JOIN
 GROUP BY 
     b.BatchId, b.Year, f.Formulation, a.AppointmentId
 ORDER BY
-	b.BatchId ASC;
+    b.BatchId ASC;
 
 -- Queries
 /* 
@@ -377,75 +377,75 @@ JOIN
 JOIN 
     Formulations f ON b.Formulation = f.Formulation
 WHERE 
-	a.Date < CURDATE() AND
+	  a.Date < CURDATE() AND
     p.PatientId = 1
 ORDER BY 
     a.Date DESC;
 
 -- Query 2: Get average number of vaccinations by sex
 SELECT
-	t.Sex,
-	AVG(t.TotalVaccinations) AS AverageVaccinations
+    t.Sex,
+    AVG(t.TotalVaccinations) AS AverageVaccinations
 FROM(
-	SELECT
-		p.Sex,
-		COUNT(*) AS TotalVaccinations
-	FROM
-		Appointments a
-	JOIN 
-		Patients p ON a.PatientId = p.PatientId
-	WHERE 
-		a.Date < CURDATE()
-	GROUP BY
-		p.PatientId, p.Sex) AS t
+    SELECT
+        p.Sex,
+        COUNT(*) AS TotalVaccinations
+    FROM
+        Appointments a
+    JOIN 
+        Patients p ON a.PatientId = p.PatientId
+    WHERE 
+        a.Date < CURDATE()
+    GROUP BY
+        p.PatientId, p.Sex) AS t
 GROUP BY t.Sex
 ORDER BY 
-	AverageVaccinations DESC;
+	  AverageVaccinations DESC;
     
 -- Query 3: Get VaccineType (Year_Formulation) of vaccine batches associated with adverse effect events
 SELECT
-	DISTINCT CONCAT(b.Year, ' ', b.Formulation) AS VaccineType
+	  DISTINCT CONCAT(b.Year, ' ', b.Formulation) AS VaccineType
 FROM 
-	View_SimpleBatchInformation b
+	  View_SimpleBatchInformation b
 JOIN
-	Appointments a ON b.AppointmentId = a.AppointmentId
+	  Appointments a ON b.AppointmentId = a.AppointmentId
 WHERE
-	a.AdverseEffectEvent <> 'None';
+	  a.AdverseEffectEvent <> 'None';
     
 -- Query 4: Get the name of the health care center with the most (past) vaccination appointments
 SELECT
-	c.CenterName
+	  c.CenterName
 FROM 
-	HealthCareCenters c
+	  HealthCareCenters c
 JOIN
-	Appointments a ON c.CenterId = a.CenterId
+	  Appointments a ON c.CenterId = a.CenterId
 WHERE
-	a.Date<CURDATE()
+	  a.Date<CURDATE()
 GROUP BY
-	c.CenterId
+	  c.CenterId
 ORDER BY 
-	COUNT(a.AppointmentId) DESC
+	  COUNT(a.AppointmentId) DESC
 LIMIT 1; 
 
 -- Query 5: Get information about upcoming appointment for patient with Id = 2
 SELECT
-	p.Name AS PatientName,
-	hcp.Name AS HealthCareProvider,
-    a.Time,
-    a.Date,
-    c.CenterName,
-    DATEDIFF(a.Date, CURDATE()) AS DaysUntilAppointment
+    p.Name AS PatientName,
+    hcp.Name AS HealthCareProvider,
+      a.Time,
+      a.Date,
+      c.CenterName,
+      DATEDIFF(a.Date, CURDATE()) AS DaysUntilAppointment
 FROM
-	Patients p
+	  Patients p
 JOIN
-	Appointments a ON p.PatientId = a.PatientId
+	  Appointments a ON p.PatientId = a.PatientId
 JOIN
-	HealthCareProviders hcp ON a.ProviderId = hcp.ProviderId
+	  HealthCareProviders hcp ON a.ProviderId = hcp.ProviderId
 JOIN
-	HealthCareCenters c ON a.CenterId = c.CenterId
+	  HealthCareCenters c ON a.CenterId = c.CenterId
 WHERE
-	a.Date > CURDATE() AND
-	p.PatientId = 2;
-    
+    a.Date > CURDATE() AND
+    p.PatientId = 2;
+      
 
 
